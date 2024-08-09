@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  shout_db:
+    container_name: postify_db
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=shout_db_user
+      - POSTGRES_PASSWORD=shout_db_password
+      - POSTGRES_DB=shout_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  shout_api:
+    container_name: postify_api
+    build:
+      context: ./shout_api
+      dockerfile: ./Dockerfile
+    depends_on:
+      - shout_db
+    ports:
+      - "8000:8000"
+
+  shout_ui:
+    container_name: postify_ui
+    build:
+      context: ./shout_ui/shout_ui
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - /app/node_modules
+      - ./shout_ui:/app
+
+volumes:
+  postgres_data:
+    
