@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-kd51y=#by*^11ktws(ta3@&ly$x)7g18*1vtdvy2-+&u=v7!e&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['*']
+# # ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "postify_app",
     # Other installed apps
     'rest_framework',
+    'drf_yasg', # swagger
 ]
 
 MIDDLEWARE = [

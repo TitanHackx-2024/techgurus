@@ -17,8 +17,12 @@ class Account(AuditedModel):
     account_name = models.CharField(max_length=255)
     account_status = models.CharField(max_length=50,choices=AccountStatus.choices, default=AccountStatus.ACTIVE)
     
+    def __str__(self):
+        return str(self.account_name)
     
 class User(AuditedModel):
+    class Meta:
+        unique_together = (('email_address', 'account_id'),)
     class UserStatus(models.TextChoices):
         ACTIVE = 'active'
         INACTIVE = 'inactive'
