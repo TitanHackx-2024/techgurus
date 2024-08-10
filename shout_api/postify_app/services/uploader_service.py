@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 from postify_app.services.twitter_utils import upload_to_twitter
 
 class PlatformUploader(ABC):
-    
     @abstractmethod
     def upload(self, content, file_path):
         pass
@@ -16,14 +15,15 @@ class YoutubeUploader(PlatformUploader):
     
 class InstagramUploader(PlatformUploader):
     def upload(self, content, file_path):
+        pass
+
+class TwitterUploader(PlatformUploader):
+    def upload(self, content, file_path):
         try:
             upload_to_twitter(content, file_path)
         except Exception as e:
             print("exception: ", e)
     
-class TwitterUploader(PlatformUploader):
-    def upload(self, content, file_path):
-        pass
 
 class UploaderFactory:
     @staticmethod

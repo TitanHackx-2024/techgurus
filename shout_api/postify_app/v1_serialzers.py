@@ -21,10 +21,10 @@ class ContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Content
         fields = '__all__'
-        # exclude = ['created_at', 'updated_at']
 
     def create(self, validated_data):
         platforms = validated_data.pop('platforms', [])
+
         content = Content.objects.create(**validated_data)
         # Create ContentPlatform entries
         for platform_id in platforms:
