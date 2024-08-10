@@ -120,8 +120,13 @@ class ContentUploadViewV1(APIView):
     
     def post(self, request,content_id):
         content = self.get_object(content_id)
-        try:
-            resp = UploaderService.upload_to_platforms(content)
-        except Exception as e:
-            return JsonResponse({'message': 'Failed to upload content.'}, status=400)
-        return JsonResponse({'message': 'Content uploaded successfully.'}, status=200)
+        
+        if content.upload_status != 'approved':
+            return JsonResponse({'message': 'Content is not approved.'}, status=400)
+        
+        success_platforms , failed_platforms = UploaderService.upload_to_platforms(content)
+        
+        if len(success_platforms) == 0:
+            return JsonResponse({'message': 'Failed to upload content to all platforms.'}, status=400)
+        
+        return JsonResponse({'message': 'Content uploaded successfully to platforms {}'.format(success_platforms)}, status=200)

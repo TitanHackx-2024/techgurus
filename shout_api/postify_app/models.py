@@ -19,7 +19,7 @@ class Account(AuditedModel):
     account_status = models.CharField(max_length=50,choices=AccountStatus.choices, default=AccountStatus.ACTIVE)
     
     def __str__(self):
-        return str(self.account_name)
+        return str(self.account_name) + ' - ' + str(self.account_id)
     
 class User(AuditedModel):
     class Meta:
@@ -37,7 +37,7 @@ class User(AuditedModel):
     
     
     def __str__(self):
-        return self.user_name
+        return str(self.email_address)  + ' - ' + str(self.account_id)
     
 class Role(models.Model):
     role_id = models.BigAutoField(primary_key=True)
@@ -79,7 +79,7 @@ class Platform(models.Model):
     ui_mapping_name = models.CharField(max_length=255, unique=True)
     
     def __str__(self):
-        return str(self.ui_mapping_name)
+        return str(self.ui_mapping_name) + ' - ' + str(self.platform_id)
 
 class ContentPlatform(models.Model):
     class UploadStatus(models.TextChoices):
