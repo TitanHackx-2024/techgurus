@@ -3,11 +3,12 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
+from postify_app.services.uploader_service import get_upload_path
 
 
 
 from postify_app.models import Account, Content
-from postify_app.v1_serialzers import UserRegisterSerializer
+from postify_app.v1_serialzers import UserRegisterSerializer , ContentSerializer
 
 class HomeView(APIView):    
     def get(self, request):
@@ -50,3 +51,33 @@ def login(request):
         else:
             return JsonResponse({'message': 'User does not exist.'})
         
+        
+class ContentViewV1(APIView):
+    serialzer_class = ContentSerializer
+    
+    def get(self, request,content_id=None):
+        if content_id:
+            try:
+                content = Content.objects.get(content_id=content_id)
+                serializer = self.serialzer_class(content)
+                return JsonResponse(serializer.data)
+            except Content.DoesNotExist:
+                return JsonResponse({'message': 'Content not found.'}, status=404)
+        # contents = Content.objects.filter(account_id=request.session.get('account_id'))
+        contents = Content.objects.filter(account_id=1)
+        serializer = self.serialzer_class(contents, many=True)
+        return JsonResponse(serializer.data, safe=False)   
+    
+    def post(self, request):
+        serialzer = self.serialzer_class(data=request.data)
+        if serialzer.is_valid():
+            serialzer.save()
+            return JsonResponse(serialzer.data, status=201, safe=False)
+        return JsonResponse(serialzer.errors, status=400) 
+        
+
+class ContentUploadViewV1(APIView):
+    def post(self, request,content_id):
+        res = get_upload_path(request)
+        print("res")
+        return JsonResponse(res)
