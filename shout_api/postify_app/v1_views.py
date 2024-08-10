@@ -2,9 +2,10 @@
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from postify_app.services.uploader_service import get_upload_path
+from postify_app.services.uploader_service import UploaderService
 
 from django.db import connection
+from django.http import Http404
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -105,7 +106,18 @@ class ContentViewV1(APIView):
         
 
 class ContentUploadViewV1(APIView):
+    
+    def get_object(self, content_id):
+        try:
+            content = Content.objects.get(content_id=content_id)
+            return content
+        except Content.DoesNotExist:
+            raise Http404
+    
     def post(self, request,content_id):
-        res = get_upload_path(request)
-        print("res")
-        return JsonResponse(res)
+        content = self.get_object(content_id)
+        try:
+            resp = UploaderService.upload_to_platforms(content)
+        except Exception as e:
+            return JsonResponse({'message': 'Failed to upload content.'}, status=400)
+        return JsonResponse({'message': 'Content uploaded successfully.'}, status=200)
