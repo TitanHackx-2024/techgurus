@@ -1,14 +1,16 @@
-from django.shortcuts import render
+
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from django.shortcuts import get_object_or_404
 from postify_app.services.uploader_service import get_upload_path
 
+from django.db import connection
+from rest_framework.response import Response
+from rest_framework import status
 
 
 from postify_app.models import Account, Content
-from postify_app.v1_serialzers import UserRegisterSerializer , ContentSerializer
+from postify_app.v1_serialzers import UserRegisterSerializer, LoginSerializer, TokenSerializer, UserReadSerializer, ContentSerializer
 
 class HomeView(APIView):    
     def get(self, request):
@@ -36,21 +38,47 @@ def get_user(request):
 
 @api_view(['POST'])
 def login(request):
-    if request.method == 'POST':
-        email_address = request.data.get('email_address')
-        password = request.data.get('password')
-        account_id = request.session.get('account_id')
+    serializer = LoginSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.validated_data['user']
+
+    return JsonResponse({
+        'authentication': TokenSerializer(user).data,
+        'user': UserReadSerializer(user, context={
+            'request': request
+        }).data,
+    }, status=200)
+    
         
-        account = get_object_or_404(Account,account_id=account_id)
-        if account.user_set.filter(email_address=email_address).exists():
-            user = account.user_set.get(email_address=email_address)
-            if user.password_hash == password:
-                return JsonResponse({'message': 'User logged in successfully.','user_id': user.user_id})
-            else:
-                return JsonResponse({'message': 'Invalid password.'})
+# Testing 
+
+class HealthCheckView(APIView):
+    
+    def get(self, request):
+        health_status = {
+            'database': self.check_database(),
+            'auth_token': self.check_auth_token(request),
+        }
+
+        if all(health_status.values()):
+            return Response({'status': 'healthy', 'details': health_status}, status=status.HTTP_200_OK)
         else:
-            return JsonResponse({'message': 'User does not exist.'})
-        
+            return Response({'status': 'unhealthy', 'details': health_status}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    def check_database(self):
+        try:
+            connection.ensure_connection()
+            return True
+        except Exception as e:
+            return False
+
+    def check_auth_token(self, request):
+        try:
+            if request.user and request.auth:
+                return True
+            return False
+        except Exception as e:
+            return False 
         
 class ContentViewV1(APIView):
     serialzer_class = ContentSerializer

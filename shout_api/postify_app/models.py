@@ -26,7 +26,7 @@ class User(AuditedModel):
     class UserStatus(models.TextChoices):
         ACTIVE = 'active'
         INACTIVE = 'inactive'
-    user_id = models.BigAutoField(primary_key=True)
+    # user_id = models.BigAutoField(primary_key=True)
     user_name = models.CharField(max_length=255)
     user_status = models.CharField(max_length=50,choices=UserStatus.choices, default=UserStatus.ACTIVE)
     password_hash = models.CharField(max_length=255)
