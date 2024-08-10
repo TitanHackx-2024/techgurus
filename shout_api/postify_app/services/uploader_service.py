@@ -1,64 +1,29 @@
 from enum import Enum
 from django.conf import settings
-from postify_app.models import Account
+from postify_app.models import Content , ContentPlatform
 from abc import ABC, abstractmethod
-from postify_app.services.twitter_utils import upload_to_twitter
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-from google.oauth2.credentials import Credentials
-
+from postify_app.services.twitter_client import upload_to_twitter
 
 class PlatformUploader(ABC):
-    
     @abstractmethod
-    def upload(self, content, file_path):
+    def upload(self, content):
         pass
     
 class YoutubeUploader(PlatformUploader):
-    def __init__(self):
-        self.client = None
-
-    def authenticate(self, credentials_json):
-        credentials = Credentials.from_authorized_user_file(credentials_json)
-        self.client = build('youtube', 'v3', credentials=credentials)
-
-    def upload(self, content, file_path):
-        try:
-            if not self.client:
-                raise Exception("YouTube client not authenticated")
-
-            media = MediaFileUpload(file_path, chunksize=-1, resumable=True)
-            request = self.client.videos().insert(
-                part="snippet,status",
-                body={
-                    "snippet": {
-                        "title": content.title,
-                        "description": content.description,
-                    },
-                    "status": {
-                        "privacyStatus": "private"  # Change if needed
-                    }
-                },
-                media_body=media
-            )
-
-            response = request.execute()
-            content_id = response.get('id')
-            return content_id
-        except Exception as err:
-            print("exception: ", err)
-
-
+    def upload(self, content):
+        pass
+    
 class InstagramUploader(PlatformUploader):
-    def upload(self, content, file_path):
+    def upload(self, content):
+        pass
+
+class TwitterUploader(PlatformUploader):
+    def upload(self, content):
         try:
-            upload_to_twitter(content, file_path)
+            upload_to_twitter(content)
         except Exception as e:
             print("exception: ", e)
     
-class TwitterUploader(PlatformUploader):
-    def upload(self, content, file_path):
-        pass
 
 class UploaderFactory:
     @staticmethod
@@ -69,24 +34,25 @@ class UploaderFactory:
             return InstagramUploader()
         elif platform == 'twitter':
             return TwitterUploader()
+        else:
+            raise ValueError("Invalid platform")
     
 class UploaderService:
     @staticmethod        
-    def upload_to_platforms(self, content, credentials_json_path=None):
+    def upload_to_platforms(content):
+        print("calling here--->", content.platforms)
         success_platforms = set()
         failed_platforms = set()
-        for platform in content.platforms:
+        for platform in content.platforms.all():
+            print("platform",platform)
             try:
-                uploader = UploaderFactory.get_uploader(platform)
-                if isinstance(uploader, YoutubeUploader):
-                    
-                    uploader.authenticate(credentials_json_path)
-                uploader.upload(content, content.file_path)
-                success_platforms.add(platform)
+                UploaderFactory.get_uploader(platform.ui_mapping_name).upload(content)
+                platform_content = ContentPlatform.objects.get(content_id=content, platform_id_id=platform.platform_id)
+                platform_content.upload_status = 'success'
+                platform_content.save()
+                success_platforms.add(platform.ui_mapping_name)
             except Exception as e:
-                print(f"Failed to upload to {platform.value}: {e}")
+                print("exception at upload: ", e)
                 failed_platforms.add(platform)
-        return {
-            'success_platforms': success_platforms,
-            'failed_platforms': failed_platforms
-            }
+
+        return success_platforms , failed_platforms

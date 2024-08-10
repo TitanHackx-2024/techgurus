@@ -2,3 +2,4 @@ shout_api/venv/
 *.pyc
 *.sqlite3
 db.sqlite3
+media/

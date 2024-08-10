@@ -8,6 +8,8 @@ from django.db import connection
 from django.http import Http404
 from rest_framework.response import Response
 from rest_framework import status
+from drf_yasg.utils import swagger_auto_schema
+
 
 
 from postify_app.models import Account, Content
@@ -21,6 +23,7 @@ class HomeView(APIView):
 class UserRegisterViewV1(APIView):
     serializer_class = UserRegisterSerializer
     
+    @swagger_auto_schema(request_body=UserRegisterSerializer)
     def post(self,request):
         serializer = UserRegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -97,6 +100,7 @@ class ContentViewV1(APIView):
         serializer = self.serialzer_class(contents, many=True)
         return JsonResponse(serializer.data, safe=False)   
     
+    @swagger_auto_schema(request_body=ContentSerializer)
     def post(self, request):
         serialzer = self.serialzer_class(data=request.data)
         if serialzer.is_valid():
@@ -116,8 +120,13 @@ class ContentUploadViewV1(APIView):
     
     def post(self, request,content_id):
         content = self.get_object(content_id)
-        try:
-            resp = UploaderService.upload_to_platforms(content)
-        except Exception as e:
-            return JsonResponse({'message': 'Failed to upload content.'}, status=400)
-        return JsonResponse({'message': 'Content uploaded successfully.'}, status=200)
+        
+        if content.upload_status != 'approved':
+            return JsonResponse({'message': 'Content is not approved.'}, status=400)
+        
+        success_platforms , failed_platforms = UploaderService.upload_to_platforms(content)
+        
+        if len(success_platforms) == 0:
+            return JsonResponse({'message': 'Failed to upload content to all platforms.'}, status=400)
+        
+        return JsonResponse({'message': 'Content uploaded successfully to platforms {}'.format(success_platforms)}, status=200)
