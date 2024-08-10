@@ -74,10 +74,16 @@ class Platform(AuditedModel):
     platform_name = models.CharField(max_length=255, choices=DefaultPlatform.choices, default=DefaultPlatform.YOUTUBE)
 
 class ContentPlatform(models.Model):
+    class ContentStatus(models.TextChoices):
+        QUEUED = 'queued'
+        FAILED = 'failed'
+        SUCCESS = 'success'
+        
     class Meta:
         unique_together = ('content_id', 'platform_id')
     content_id = models.ForeignKey('Content', on_delete=models.CASCADE)
     platform_id = models.ForeignKey('Platform', on_delete=models.CASCADE)
+    upload_status = models.CharField(max_length=50, choices=ContentStatus.choices, default=ContentStatus.QUEUED)
 
 
 class Content(AuditedModel):
