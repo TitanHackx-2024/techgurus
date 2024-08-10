@@ -1,5 +1,6 @@
 from django.db import models
 import json
+import os
 
 # base model 
 class AuditedModel(models.Model):
@@ -54,14 +55,18 @@ class Role(models.Model):
         permissions = self.get_permissions()
         return permissions.get(permission_key, False)
     
+    def __str__(self):
+        return str(self.role_name)
+    
 class UserRole(AuditedModel):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     role_id = models.ForeignKey(Role, on_delete=models.CASCADE)
     class Meta:
         unique_together = ('user_id', 'role_id')
         
-class Platform(AuditedModel):
-    class DefaultPlatform(models.TextChoices):
+class Platform(models.Model):
+    import enum
+    class DefaultPlatform(enum.Enum):
         YOUTUBE = 'youtube'
         INSTAGRAM = 'instagram'
         TWITTER = 'twitter'
@@ -71,10 +76,13 @@ class Platform(AuditedModel):
         LINKEDIN = 'linkedin'
         
     platform_id = models.BigAutoField(primary_key=True)
-    platform_name = models.CharField(max_length=255, choices=DefaultPlatform.choices, default=DefaultPlatform.YOUTUBE)
+    ui_mapping_name = models.CharField(max_length=255, unique=True)
+    
+    def __str__(self):
+        return str(self.ui_mapping_name)
 
 class ContentPlatform(models.Model):
-    class ContentStatus(models.TextChoices):
+    class UploadStatus(models.TextChoices):
         QUEUED = 'queued'
         FAILED = 'failed'
         SUCCESS = 'success'
@@ -83,7 +91,7 @@ class ContentPlatform(models.Model):
         unique_together = ('content_id', 'platform_id')
     content_id = models.ForeignKey('Content', on_delete=models.CASCADE)
     platform_id = models.ForeignKey('Platform', on_delete=models.CASCADE)
-    upload_status = models.CharField(max_length=50, choices=ContentStatus.choices, default=ContentStatus.QUEUED)
+    upload_status = models.CharField(max_length=50, choices=UploadStatus.choices, default=UploadStatus.QUEUED)
 
 
 class Content(AuditedModel):
@@ -92,6 +100,7 @@ class Content(AuditedModel):
         IMAGE = 'Image'
         TEXT = 'Text'
         AUDIO = 'Audio'
+
     class ContentStatus(models.TextChoices):
         DRAFT = 'draft'
         IN_REVIEW = 'in_review'
@@ -101,9 +110,14 @@ class Content(AuditedModel):
     account_id = models.ForeignKey('Account', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    file_path = models.CharField(max_length=255)
+    text_content = models.TextField()
+    files = models.FileField(upload_to='uploads/',blank=True, null=True)
     content_type = models.CharField(max_length=50, choices=ContentType.choices, default=ContentType.TEXT)
     created_by = models.ForeignKey('User', on_delete=models.CASCADE)
     scheduled_time = models.DateTimeField(null=True, blank=True) 
     upload_status = models.CharField(max_length=50, choices=ContentStatus.choices, default=ContentStatus.DRAFT)
     platforms = models.ManyToManyField('Platform', through='ContentPlatform') 
+    
+    
+    
+            

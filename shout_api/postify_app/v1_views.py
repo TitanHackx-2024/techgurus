@@ -8,6 +8,8 @@ from django.db import connection
 from django.http import Http404
 from rest_framework.response import Response
 from rest_framework import status
+from drf_yasg.utils import swagger_auto_schema
+
 
 
 from postify_app.models import Account, Content
@@ -21,6 +23,7 @@ class HomeView(APIView):
 class UserRegisterViewV1(APIView):
     serializer_class = UserRegisterSerializer
     
+    @swagger_auto_schema(request_body=UserRegisterSerializer)
     def post(self,request):
         serializer = UserRegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -97,6 +100,7 @@ class ContentViewV1(APIView):
         serializer = self.serialzer_class(contents, many=True)
         return JsonResponse(serializer.data, safe=False)   
     
+    @swagger_auto_schema(request_body=ContentSerializer)
     def post(self, request):
         serialzer = self.serialzer_class(data=request.data)
         if serialzer.is_valid():

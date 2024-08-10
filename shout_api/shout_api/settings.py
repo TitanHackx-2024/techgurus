@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 from datetime import timedelta
+import os
 
 from pathlib import Path
 
@@ -22,6 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-kd51y=#by*^11ktws(ta3@&ly$x)7g18*1vtdvy2-+&u=v7!e&"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
