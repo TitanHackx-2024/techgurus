@@ -1,5 +1,7 @@
-shout_api/venv/
 *.pyc
-*.sqlite3
+__pycache__
 db.sqlite3
+.env
+shout_api/venv/
+*.log
 media/
