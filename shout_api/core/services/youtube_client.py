@@ -3,12 +3,14 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.oauth2.credentials import Credentials
 from django.conf  import settings
+import os
 
 class YoutubeClient:
     def __init__(self):
         # OAuth 2.0 client secrets file
         # D:\titanhack\techgurus\shout_api\postify_app\services\youtube_cred.json
-        self.client_secrets_file = settings.YOUTUBE_CRED_PATH
+        current_folder = os.path.dirname(os.path.abspath(__file__))
+        self.client_secrets_file = os.path.join(current_folder, 'youtube_creds.json')
         self.scopes = ["https://www.googleapis.com/auth/youtube.upload"]
 
         # Authenticate and build service

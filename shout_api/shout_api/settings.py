@@ -46,11 +46,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "postify_app",
+    # "postify_app",
+    "core",
     # Other installed apps
     'rest_framework',
+    'rest_framework_simplejwt',
     'drf_yasg', # swagger
+    'django_filters',
 ]
+
+AUTH_USER_MODEL = 'core.User'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -157,3 +162,4 @@ SIMPLE_JWT = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
 }
+

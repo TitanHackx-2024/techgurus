@@ -1,9 +1,9 @@
 from enum import Enum
 from django.conf import settings
-from postify_app.models import Content , ContentPlatform
+from core.models import Content , ContentPlatform
 from abc import ABC, abstractmethod
-from postify_app.services.twitter_client import upload_to_twitter
-from postify_app.services.youtube_client import YoutubeClient
+from core.services.twitter_client import upload_to_twitter
+from core.services.youtube_client import YoutubeClient
 
 class PlatformUploader(ABC):
     @abstractmethod
