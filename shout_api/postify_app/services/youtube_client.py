@@ -21,9 +21,7 @@ class YoutubeClient:
         return build('youtube', 'v3', credentials=credentials)
 
 
-    def upload(self, content):
-        print("calling youtube_client....")
-        
+    def upload(self, content):        
         if not content.files and content.content_type != 'Video':
             print("No files to upload to youtube")
             return False

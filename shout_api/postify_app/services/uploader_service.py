@@ -13,8 +13,7 @@ class PlatformUploader(ABC):
 class YoutubeUploader(PlatformUploader):
     def upload(self, content):
         try:
-            res = YoutubeClient().upload(content)
-            print("res-->",res)
+            YoutubeClient().upload(content)
         except Exception as e:
             print("exception: ", e)
     
@@ -49,9 +48,7 @@ class UploaderService:
         failed_platforms = set()
         for platform in content.platforms.all():
             try:
-                uploader = UploaderFactory.get_uploader(platform.ui_mapping_name)
-                resp = uploader.upload(content)
-                print("uploader: ", uploader,"resp",resp)
+                UploaderFactory.get_uploader(platform.ui_mapping_name).upload(content)
                 platform_content = ContentPlatform.objects.get(content_id=content, platform_id_id=platform.platform_id)
                 platform_content.upload_status = 'success'
                 platform_content.save()

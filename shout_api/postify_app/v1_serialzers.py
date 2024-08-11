@@ -1,12 +1,17 @@
 from django.core.validators import validate_email
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import serializers
-from .models import Account, Content , User , Platform, ContentPlatform
+from .models import Account, Content , User , Role, ContentPlatform
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+        fields = '__all__'
+        
+class AccountRolesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
         fields = '__all__'
         
 # class ContentPlatformSerializer(serializers.ModelSerializer):
