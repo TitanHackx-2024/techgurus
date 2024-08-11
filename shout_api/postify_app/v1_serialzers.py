@@ -1,12 +1,17 @@
 from django.core.validators import validate_email
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import serializers
-from .models import Account, Content , User , Platform, ContentPlatform
+from .models import Account, Content , User , Role, ContentPlatform
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+        fields = '__all__'
+        
+class AccountRolesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
         fields = '__all__'
         
 # class ContentPlatformSerializer(serializers.ModelSerializer):
@@ -18,28 +23,27 @@ class ContentSerializer(serializers.ModelSerializer):
     platforms = serializers.ListField(
         child=serializers.IntegerField(), write_only=True
     )
+
     class Meta:
         model = Content
         fields = '__all__'
 
     def create(self, validated_data):
         platforms = validated_data.pop('platforms', [])
-
-        content = Content.objects.create(**validated_data)
-        # Create ContentPlatform entries
+        instance = super().create(validated_data)
         for platform_id in platforms:
-            ContentPlatform.objects.create(content_id=content, platform_id_id=platform_id)
-        return super().create(validated_data)    
-     
+            ContentPlatform.objects.create(content_id=instance, platform_id_id=platform_id)
+        return instance
+
     def update(self, instance, validated_data):
         platforms = validated_data.pop('platforms', [])
         instance = super().update(instance, validated_data)
-        # Clear existing platforms and add new ones
         ContentPlatform.objects.filter(content_id=instance).delete()
         for platform_id in platforms:
             ContentPlatform.objects.create(content_id=instance, platform_id_id=platform_id)
         
         return instance   
+
     
     def to_representation(self, instance):
         response = super().to_representation(instance)

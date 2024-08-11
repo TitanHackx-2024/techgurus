@@ -26,6 +26,8 @@ SECRET_KEY = "django-insecure-kd51y=#by*^11ktws(ta3@&ly$x)7g18*1vtdvy2-+&u=v7!e&
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+YOUTUBE_CRED_PATH = os.path.join(BASE_DIR,'youtube_cred.json')
+
 
 
 
