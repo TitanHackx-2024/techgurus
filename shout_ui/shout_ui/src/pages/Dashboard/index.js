@@ -1,11 +1,4 @@
-import React from 'react';
-
-const DashboardPage = () => {
-    return (
-        <div>
-            Dashboard
-        </div>
-    );
-};
-
-export default DashboardPage;
+export * from "./home";
+export * from "./profile";
+export * from "./tables";
+export * from "./notifications";

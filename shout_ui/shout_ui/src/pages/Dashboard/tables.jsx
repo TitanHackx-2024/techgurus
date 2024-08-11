@@ -9,7 +9,9 @@ import {
   Progress,
 } from "@material-tailwind/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
-import { authorsTableData, projectsTableData } from "@/data";
+import { projectsTableData } from "../../data";
+
+const authorsTableData = [];
 
 export function Tables() {
   return (
@@ -52,7 +54,12 @@ export function Tables() {
                     <tr key={name}>
                       <td className={className}>
                         <div className="flex items-center gap-4">
-                          <Avatar src={img} alt={name} size="sm" variant="rounded" />
+                          <Avatar
+                            src={img}
+                            alt={name}
+                            size="sm"
+                            variant="rounded"
+                          />
                           <div>
                             <Typography
                               variant="small"

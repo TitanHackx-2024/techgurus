@@ -19,13 +19,17 @@ import {
   PencilIcon,
 } from "@heroicons/react/24/solid";
 import { Link } from "react-router-dom";
-import { ProfileInfoCard, MessageCard } from "@/widgets/cards";
-import { platformSettingsData, conversationsData, projectsData } from "@/data";
+import { ProfileInfoCard, MessageCard } from "../../widgets/cards";
+import {
+  platformSettingsData,
+  conversationsData,
+  projectsData,
+} from "../../data";
 
 export function Profile() {
   return (
     <>
-      <div className="relative mt-8 h-72 w-full overflow-hidden rounded-xl bg-[url('/img/background-image.png')] bg-cover	bg-center">
+      <div className="relative mt-8 h-72 w-full overflow-hidden rounded-xl bg-[url('https://images.unsplash.com/photo-1639754391037-98dd3cb74e09?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Y2hhcnR8ZW58MHx8MHx8fDA%3D')] bg-cover	bg-center">
         <div className="absolute inset-0 h-full w-full bg-gray-900/75" />
       </div>
       <Card className="mx-3 -mt-16 mb-6 lg:mx-4 border border-blue-gray-100">

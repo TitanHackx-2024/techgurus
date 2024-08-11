@@ -13,7 +13,7 @@ import {
   setSidenavColor,
   setSidenavType,
   setFixedNavbar,
-} from "@/context";
+} from "../../context";
 
 function formatNumber(number, decPlaces) {
   decPlaces = Math.pow(10, decPlaces);
@@ -211,17 +211,11 @@ export function Configurator() {
             Thank you for sharing ❤️
           </Typography>
           <div className="mt-4 flex justify-center gap-2">
-            <Button
-              variant="gradient"
-              className="flex items-center gap-2"
-            >
+            <Button variant="gradient" className="flex items-center gap-2">
               <i className="fa-brands fa-twitter text-white" />
               Tweet
             </Button>
-            <Button
-              variant="gradient"
-              className="flex items-center gap-2"
-            >
+            <Button variant="gradient" className="flex items-center gap-2">
               <i className="fa-brands fa-facebook text-white" />
               Share
             </Button>

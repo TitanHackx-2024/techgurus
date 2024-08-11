@@ -1,7 +1,7 @@
-import React from "react";
+import { createContext, useContext, useMemo, useReducer } from "react";
 import PropTypes from "prop-types";
 
-export const MaterialTailwind = React.createContext(null);
+export const MaterialTailwind = createContext(null);
 MaterialTailwind.displayName = "MaterialTailwindContext";
 
 export function reducer(state, action) {
@@ -34,17 +34,14 @@ export function MaterialTailwindControllerProvider({ children }) {
   const initialState = {
     openSidenav: false,
     sidenavColor: "dark",
-    sidenavType: "white",
+    sidenavType: "dark",
     transparentNavbar: true,
     fixedNavbar: false,
     openConfigurator: false,
   };
 
-  const [controller, dispatch] = React.useReducer(reducer, initialState);
-  const value = React.useMemo(
-    () => [controller, dispatch],
-    [controller, dispatch]
-  );
+  const [controller, dispatch] = useReducer(reducer, initialState);
+  const value = useMemo(() => [controller, dispatch], [controller, dispatch]);
 
   return (
     <MaterialTailwind.Provider value={value}>
@@ -54,11 +51,11 @@ export function MaterialTailwindControllerProvider({ children }) {
 }
 
 export function useMaterialTailwindController() {
-  const context = React.useContext(MaterialTailwind);
+  const context = useContext(MaterialTailwind);
 
   if (!context) {
     throw new Error(
-      "useMaterialTailwindController should be used inside the MaterialTailwindControllerProvider."
+      "useMaterialTailwindController should be used inside the MaterialTailwindControllerProvider.",
     );
   }
 

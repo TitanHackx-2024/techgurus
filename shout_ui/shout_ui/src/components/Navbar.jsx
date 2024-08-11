@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+
 const Navbar = () => {
   const navigate = useNavigate();
   return (
@@ -19,9 +20,9 @@ const Navbar = () => {
             className={
               "flex justify-center items-center bg-blue-400 px-3 py-2 text-white rounded-lg cursor-pointer hover:bg-blue-500 transition"
             }
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/dashboard")}
           >
-            SignUp
+            Dashboard
           </button>
           <button
             className={
