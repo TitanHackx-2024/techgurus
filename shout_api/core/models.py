@@ -124,6 +124,7 @@ class Content(AuditedModel):
         APPROVED = 'approved'
         IN_PROGRESS = 'in_progress'
         REJECTED = 'rejected'
+        PUBLISHED = 'published'
     
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)

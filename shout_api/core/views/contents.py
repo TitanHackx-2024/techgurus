@@ -8,9 +8,10 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from core.models import Content
 from core.serializers.contents import ContentSerializer, ContentCreateSerializer
 from core.permissions import HasRolePermission, IsContentCreator, IsEditor
+from core.services.uploader_service import UploaderService
 
-from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
 
 
@@ -80,6 +81,23 @@ class ContentViewSet(viewsets.ModelViewSet):
         content = self.get_object()
         content.reject()
         return Response({'status': 'Content rejected'})
+    
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated, IsContentCreator | HasRolePermission])
+    def publish(self, request, pk=None):
+        content = self.get_object()
+        print(content)
+
+        success_platforms , failed_platforms = UploaderService.upload_to_platforms(content)
+        
+        if len(success_platforms) == 0:
+            return Response('Failed to upload content to all platforms.')
+            
+        content.status = Content.ContentStatus.PUBLISHED
+        content.save()
+
+        return Response({'status': f'Published content: {content.title}'})
+    
 
     
     def get_permissions(self):

@@ -24,7 +24,7 @@ class YoutubeClient:
 
 
     def upload(self, content):        
-        if not content.files and content.content_type != 'Video':
+        if not content.edited_content and content.content_type != 'Video':
             print("No files to upload to youtube")
             return False
         try:
@@ -40,7 +40,7 @@ class YoutubeClient:
                         'privacyStatus': 'public'
                     }
                 },
-                media_body=MediaFileUpload(content.files.path)
+                media_body=MediaFileUpload(content.edited_content.path)
             )
 
             response = media.execute()
