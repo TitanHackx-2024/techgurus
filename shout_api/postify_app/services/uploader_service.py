@@ -3,6 +3,7 @@ from django.conf import settings
 from postify_app.models import Content , ContentPlatform
 from abc import ABC, abstractmethod
 from postify_app.services.twitter_client import upload_to_twitter
+from postify_app.services.youtube_client import YoutubeClient
 
 class PlatformUploader(ABC):
     @abstractmethod
@@ -11,7 +12,11 @@ class PlatformUploader(ABC):
     
 class YoutubeUploader(PlatformUploader):
     def upload(self, content):
-        pass
+        try:
+            res = YoutubeClient().upload(content)
+            print("res-->",res)
+        except Exception as e:
+            print("exception: ", e)
     
 class InstagramUploader(PlatformUploader):
     def upload(self, content):
@@ -40,13 +45,13 @@ class UploaderFactory:
 class UploaderService:
     @staticmethod        
     def upload_to_platforms(content):
-        print("calling here--->", content.platforms)
         success_platforms = set()
         failed_platforms = set()
         for platform in content.platforms.all():
-            print("platform",platform)
             try:
-                UploaderFactory.get_uploader(platform.ui_mapping_name).upload(content)
+                uploader = UploaderFactory.get_uploader(platform.ui_mapping_name)
+                resp = uploader.upload(content)
+                print("uploader: ", uploader,"resp",resp)
                 platform_content = ContentPlatform.objects.get(content_id=content, platform_id_id=platform.platform_id)
                 platform_content.upload_status = 'success'
                 platform_content.save()
